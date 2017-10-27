@@ -17,15 +17,22 @@ import java.util.HashMap;
 
 /**
  * Created by sagar on 10/27/2017.
+ * this is the custom content provider created for the application.
+ * it has a sqlite db with 2 tables from which it gets its data. the tables are named table one &
+ * table two. both have a simple structure. onw with id and name and another with id and mobile number.
+ * the main aim is to show a demo how to use the content provider in an android app.
  */
 public class ContentProvider extends android.content.ContentProvider {
 
-    private static HashMap<String, String> values;
-
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /*
+    params for the sqlite.
+     */
     private SQLiteDatabase sqlDB;
     static final String DATABASE_NAME = "sqlite_database";
     static final int DATABASE_VERSION = 1;
 
+    //table one
     public static final String TABLE_ONE = "table_one";
     public static final String KEY_ID_TABLE_ONE = "ID";
     public static final String KEY_NAME = "NAME";
@@ -34,6 +41,7 @@ public class ContentProvider extends android.content.ContentProvider {
             + KEY_NAME + " TEXT NOT NULL"
             + ");";
 
+    //table two
     public static final String TABLE_TWO = "table_two";
     public static final String KEY_ID_TABLE_TWO = "ID";
     public static final String KEY_MOBILE = "MOBILE";
@@ -41,7 +49,12 @@ public class ContentProvider extends android.content.ContentProvider {
             + " (" + KEY_ID_TABLE_TWO + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + KEY_MOBILE + " TEXT NOT NULL"
             + ");";
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    /*
+    params for the content provider
+     */
     static final String PROVIDER_NAME = "com.sagar.android_projects.contentprovider";
 
     public static final String URL = "content://" + PROVIDER_NAME + "/database";
@@ -56,6 +69,7 @@ public class ContentProvider extends android.content.ContentProvider {
         uriMatcher.addURI(PROVIDER_NAME, "database/" + TABLE_ONE, URI_TABLE_ONE);
         uriMatcher.addURI(PROVIDER_NAME, "database/" + TABLE_TWO, URI_TABLE_TWO);
     }
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public boolean onCreate() {
@@ -66,17 +80,23 @@ public class ContentProvider extends android.content.ContentProvider {
 
     @Nullable
     @Override
-    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
+    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
+                        @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-        queryBuilder.setTables(TABLE_ONE);
+        HashMap<String, String> values = null;
         switch (uriMatcher.match(uri)) {
             case URI_TABLE_ONE:
-                queryBuilder.setProjectionMap(values);
+                queryBuilder.setTables(TABLE_ONE);
+                break;
+            case URI_TABLE_TWO:
+                queryBuilder.setTables(TABLE_TWO);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
         }
-        Cursor cursor = queryBuilder.query(sqlDB, projection, selection, selectionArgs, null, null, sortOrder);
+        queryBuilder.setProjectionMap(values);
+        Cursor cursor = queryBuilder.query(sqlDB, projection, selection, selectionArgs,
+                null, null, sortOrder);
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
         return cursor;
     }
