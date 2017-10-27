@@ -1,5 +1,7 @@
 package com.sagar.android_projects.contentprovider.adapter;
 
+import android.content.Context;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,9 +19,11 @@ import java.util.ArrayList;
 public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
     private ArrayList<DataForRecyclerview> dataForRecyclerviews;
+    Context context;
 
-    public Adapter(ArrayList<DataForRecyclerview> dataForRecyclerviews) {
+    public Adapter(ArrayList<DataForRecyclerview> dataForRecyclerviews, Context context) {
         this.dataForRecyclerviews = dataForRecyclerviews;
+        this.context = context;
     }
 
     @Override
@@ -42,12 +46,25 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
         private TextView textViewId;
         private TextView textViewValue;
+        private ConstraintLayout constraintLayout;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
             textViewId = itemView.findViewById(R.id.textview_id);
             textViewValue = itemView.findViewById(R.id.textview_value);
+            constraintLayout = itemView.findViewById(R.id.container);
+
+            constraintLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ((Callback) context).clickedOnItem(getAdapterPosition());
+                }
+            });
         }
+    }
+
+    public interface Callback {
+        void clickedOnItem(int position);
     }
 }

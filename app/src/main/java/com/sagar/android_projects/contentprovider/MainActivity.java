@@ -25,7 +25,7 @@ import com.sagar.android_projects.contentprovider.pojo.DataForRecyclerview;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Adapter.Callback {
 
     private RadioButton radioButtonTableOne;
     private RadioButton radioButtonTableTwo;
@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
     ArrayList<DataForRecyclerview> dataForRecyclerviews;
     Adapter adapter;
+    private int selectedIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (!isChecked)
                     return;
+                editTextUpdateOrDelete.setText("");
                 resetRecyclerview();
                 currentSelection = CurrentSelection.TABLE_ONE;
                 getAllDataAndSetToRecyclerview();
@@ -81,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (!isChecked)
                     return;
+                editTextUpdateOrDelete.setText("");
                 resetRecyclerview();
                 currentSelection = CurrentSelection.TABLE_TWO;
                 getAllDataAndSetToRecyclerview();
@@ -95,6 +98,15 @@ public class MainActivity extends AppCompatActivity {
                 hideSoftKB();
                 addValue(editTextAdd.getText().toString());
                 editTextAdd.setText("");
+            }
+        });
+
+        buttonUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (editTextUpdateOrDelete.getText().length() == 0)
+                    return;
+                update(editTextUpdateOrDelete.getText().toString());
             }
         });
 
@@ -118,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
                         String id = cursor.getString(cursor.getColumnIndex(ContentProvider.KEY_ID_TABLE_ONE));
                         String name = cursor.getString(cursor.getColumnIndex(ContentProvider.KEY_NAME));
                         dataForRecyclerviews.add(new DataForRecyclerview(id, name));
-                        adapter = new Adapter(dataForRecyclerviews);
+                        adapter = new Adapter(dataForRecyclerviews, MainActivity.this);
                         recyclerView.setAdapter(adapter);
                     } while (cursor.moveToNext());
                 }
@@ -134,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
                         String id = cursorr.getString(cursorr.getColumnIndex(ContentProvider.KEY_ID_TABLE_TWO));
                         String mobile = cursorr.getString(cursorr.getColumnIndex(ContentProvider.KEY_MOBILE));
                         dataForRecyclerviews.add(new DataForRecyclerview(id, mobile));
-                        adapter = new Adapter(dataForRecyclerviews);
+                        adapter = new Adapter(dataForRecyclerviews, MainActivity.this);
                         recyclerView.setAdapter(adapter);
                     } while (cursorr.moveToNext());
                 }
@@ -150,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
                 values.put(ContentProvider.KEY_NAME, value);
                 Uri uri = resolver.insert(Uri.parse(ContentProvider.URL + "/" + ContentProvider.TABLE_ONE), values);
                 if (uri != null) {
-                    Toast.makeText(getBaseContext(), "New Contact Added" + uri, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getBaseContext(), "New Contact Adde" + uri, Toast.LENGTH_LONG).show();
                     getAllDataAndSetToRecyclerview();
                 } else {
                     Toast.makeText(MainActivity.this, "New Contact not Added", Toast.LENGTH_LONG).show();
@@ -169,8 +181,21 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void update(String value) {
+        ContentValues values = new ContentValues();
+        switch (currentSelection) {
+            case TABLE_ONE:
+                values.put(ContentProvider.KEY_NAME, value);
+                String where = ContentProvider.KEY_ID_TABLE_ONE + " = ?";
+                String[] args = new String[]{String.valueOf(selectedIndex + 1)};
+                int rows = resolver.update(Uri.parse(ContentProvider.URL + "/" + ContentProvider.TABLE_ONE), values, where, args);
+                if (rows > 0)
+                    getAllDataAndSetToRecyclerview();
+        }
+    }
+
     private void resetRecyclerview() {
-        adapter = new Adapter(new ArrayList<DataForRecyclerview>());
+        adapter = new Adapter(new ArrayList<DataForRecyclerview>(), MainActivity.this);
         recyclerView.setAdapter(adapter);
     }
 
@@ -180,5 +205,11 @@ public class MainActivity extends AppCompatActivity {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+    }
+
+    @Override
+    public void clickedOnItem(int position) {
+        selectedIndex = position;
+        editTextUpdateOrDelete.setText(dataForRecyclerviews.get(position).getValue());
     }
 }
