@@ -58,13 +58,13 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
             constraintLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ((Callback) context).clickedOnItem(getAdapterPosition());
+                    ((Callback) context).clickedOnItem(getAdapterPosition(),dataForRecyclerviews.get(getAdapterPosition()).getId());
                 }
             });
         }
     }
 
     public interface Callback {
-        void clickedOnItem(int position);
+        void clickedOnItem(int position,String dbId);
     }
 }

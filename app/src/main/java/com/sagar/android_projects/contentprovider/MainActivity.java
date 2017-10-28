@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements Adapter.Callback 
     ArrayList<DataForRecyclerview> dataForRecyclerviews;
     Adapter adapter;
     private int selectedIndex;
+    private String dbId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,7 +107,20 @@ public class MainActivity extends AppCompatActivity implements Adapter.Callback 
             public void onClick(View v) {
                 if (editTextUpdateOrDelete.getText().length() == 0)
                     return;
+                hideSoftKB();
                 update(editTextUpdateOrDelete.getText().toString());
+                editTextUpdateOrDelete.setText("");
+            }
+        });
+
+        buttonDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (editTextUpdateOrDelete.getText().length() == 0)
+                    return;
+                hideSoftKB();
+                delete();
+                editTextUpdateOrDelete.setText("");
             }
         });
 
@@ -162,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements Adapter.Callback 
                 values.put(ContentProvider.KEY_NAME, value);
                 Uri uri = resolver.insert(Uri.parse(ContentProvider.URL + "/" + ContentProvider.TABLE_ONE), values);
                 if (uri != null) {
-                    Toast.makeText(getBaseContext(), "New Contact Adde" + uri, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getBaseContext(), "New Contact Added" + uri, Toast.LENGTH_LONG).show();
                     getAllDataAndSetToRecyclerview();
                 } else {
                     Toast.makeText(MainActivity.this, "New Contact not Added", Toast.LENGTH_LONG).show();
@@ -183,14 +197,48 @@ public class MainActivity extends AppCompatActivity implements Adapter.Callback 
 
     private void update(String value) {
         ContentValues values = new ContentValues();
+        String where;
+        String[] args;
+        int rows;
         switch (currentSelection) {
             case TABLE_ONE:
                 values.put(ContentProvider.KEY_NAME, value);
-                String where = ContentProvider.KEY_ID_TABLE_ONE + " = ?";
-                String[] args = new String[]{String.valueOf(selectedIndex + 1)};
-                int rows = resolver.update(Uri.parse(ContentProvider.URL + "/" + ContentProvider.TABLE_ONE), values, where, args);
+                where = ContentProvider.KEY_ID_TABLE_ONE + " = ?";
+                args = new String[]{dbId};
+                rows = resolver.update(Uri.parse(ContentProvider.URL + "/" + ContentProvider.TABLE_ONE), values, where, args);
                 if (rows > 0)
                     getAllDataAndSetToRecyclerview();
+                break;
+            case TABLE_TWO:
+                values.put(ContentProvider.KEY_MOBILE, value);
+                where = ContentProvider.KEY_ID_TABLE_TWO + " = ?";
+                args = new String[]{dbId};
+                rows = resolver.update(Uri.parse(ContentProvider.URL + "/" + ContentProvider.TABLE_TWO), values, where, args);
+                if (rows > 0)
+                    getAllDataAndSetToRecyclerview();
+                break;
+        }
+    }
+
+    private void delete() {
+        String where;
+        String[] args;
+        int rows = 0;
+        switch (currentSelection) {
+            case TABLE_ONE:
+                where = ContentProvider.KEY_ID_TABLE_ONE + " = ?";
+                args = new String[]{dbId};
+                rows = resolver.delete(Uri.parse(ContentProvider.URL + "/" + ContentProvider.TABLE_ONE), where, args);
+                break;
+            case TABLE_TWO:
+                where = ContentProvider.KEY_ID_TABLE_TWO + " = ?";
+                args = new String[]{dbId};
+                rows = resolver.delete(Uri.parse(ContentProvider.URL + "/" + ContentProvider.TABLE_TWO), where, args);
+                break;
+        }
+        if (rows > 0) {
+            resetRecyclerview();
+            getAllDataAndSetToRecyclerview();
         }
     }
 
@@ -208,8 +256,11 @@ public class MainActivity extends AppCompatActivity implements Adapter.Callback 
     }
 
     @Override
-    public void clickedOnItem(int position) {
+    public void clickedOnItem(int position, String id) {
         selectedIndex = position;
         editTextUpdateOrDelete.setText(dataForRecyclerviews.get(position).getValue());
+        editTextUpdateOrDelete.requestFocus();
+        editTextUpdateOrDelete.setSelection(editTextUpdateOrDelete.getText().length());
+        dbId = id;
     }
 }
