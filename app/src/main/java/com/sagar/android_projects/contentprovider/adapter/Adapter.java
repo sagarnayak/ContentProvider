@@ -28,7 +28,8 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.singleview, parent, false));
+        return new ViewHolder(LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.singleview, parent, false));
     }
 
     @Override
@@ -58,7 +59,8 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
             constraintLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ((Callback) context).clickedOnItem(getAdapterPosition(),dataForRecyclerviews.get(getAdapterPosition()).getId());
+                    ((Callback) context).clickedOnItem(getAdapterPosition(),
+                            dataForRecyclerviews.get(getAdapterPosition()).getId());
                 }
             });
         }

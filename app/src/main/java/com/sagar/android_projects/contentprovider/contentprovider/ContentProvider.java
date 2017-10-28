@@ -142,7 +142,8 @@ public class ContentProvider extends android.content.ContentProvider {
     }
 
     @Override
-    public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
+    public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection,
+                      @Nullable String[] selectionArgs) {
         int rowsUpdated;
 
         switch (uriMatcher.match(uri)) {

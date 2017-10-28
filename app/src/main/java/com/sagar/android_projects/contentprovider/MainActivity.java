@@ -27,12 +27,17 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements Adapter.Callback {
 
+    @SuppressWarnings("FieldCanBeLocal")
     private RadioButton radioButtonTableOne;
+    @SuppressWarnings("FieldCanBeLocal")
     private RadioButton radioButtonTableTwo;
     private EditText editTextAdd;
+    @SuppressWarnings("FieldCanBeLocal")
     private Button buttonAdd;
     private EditText editTextUpdateOrDelete;
+    @SuppressWarnings("FieldCanBeLocal")
     private Button buttonUpdate;
+    @SuppressWarnings("FieldCanBeLocal")
     private Button buttonDelete;
     private RecyclerView recyclerView;
 
@@ -47,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements Adapter.Callback 
 
     ArrayList<DataForRecyclerview> dataForRecyclerviews;
     Adapter adapter;
+    @SuppressWarnings("FieldCanBeLocal,unused")
     private int selectedIndex;
     private String dbId;
 
@@ -136,7 +142,8 @@ public class MainActivity extends AppCompatActivity implements Adapter.Callback 
         switch (currentSelection) {
             case TABLE_ONE:
                 String[] projection = new String[]{ContentProvider.KEY_ID_TABLE_ONE, ContentProvider.KEY_NAME};
-                Cursor cursor = resolver.query(Uri.parse(ContentProvider.URL + "/" + ContentProvider.TABLE_ONE), projection, null, null, null);
+                Cursor cursor = resolver.query(Uri.parse(ContentProvider.URL + "/" +
+                        ContentProvider.TABLE_ONE), projection, null, null, null);
                 if (cursor == null)
                     return;
                 if (cursor.moveToFirst()) {
@@ -152,7 +159,8 @@ public class MainActivity extends AppCompatActivity implements Adapter.Callback 
                 break;
             case TABLE_TWO:
                 String[] projectionn = new String[]{ContentProvider.KEY_ID_TABLE_TWO, ContentProvider.KEY_MOBILE};
-                Cursor cursorr = resolver.query(Uri.parse(ContentProvider.URL + "/" + ContentProvider.TABLE_TWO), projectionn, null, null, null);
+                Cursor cursorr = resolver.query(Uri.parse(ContentProvider.URL + "/" +
+                        ContentProvider.TABLE_TWO), projectionn, null, null, null);
                 if (cursorr == null)
                     return;
                 if (cursorr.moveToFirst()) {
@@ -251,6 +259,8 @@ public class MainActivity extends AppCompatActivity implements Adapter.Callback 
         View view = this.getCurrentFocus();
         if (view != null) {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm == null)
+                return;
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }

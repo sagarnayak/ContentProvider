@@ -3,7 +3,6 @@ package com.sagar.android_projects.contentprovider.pojo;
 /**
  * Created by sagar on 10/27/2017.
  */
-
 public class DataForRecyclerview {
 
     private String id;
