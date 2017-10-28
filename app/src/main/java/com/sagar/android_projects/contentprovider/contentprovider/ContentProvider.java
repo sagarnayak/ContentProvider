@@ -21,6 +21,10 @@ import java.util.HashMap;
  * it has a sqlite db with 2 tables from which it gets its data. the tables are named table one &
  * table two. both have a simple structure. onw with id and name and another with id and mobile number.
  * the main aim is to show a demo how to use the content provider in an android app.
+ * it uses two tables TABLE ONE and TABLE TWO.
+ * both have same structure. one has the id and name and another has id and mobile number.
+ * the aim is to show working with multiple tables in content provider.
+ * the SQLite database is used by the content provider for storing the data.
  */
 public class ContentProvider extends android.content.ContentProvider {
 
@@ -62,6 +66,10 @@ public class ContentProvider extends android.content.ContentProvider {
     static final int URI_TABLE_ONE = 1;
     static final int URI_TABLE_TWO = 2;
 
+    /*
+    uri matcher us used to distinguish between different uri sent to the content provider and perform
+    the intended task.
+     */
     static final UriMatcher uriMatcher;
 
     static {
@@ -78,6 +86,17 @@ public class ContentProvider extends android.content.ContentProvider {
         return sqlDB != null;
     }
 
+    /**
+     * the method to override when using ContentProvider.
+     * this will be fired when the query() is called.
+     *
+     * @param uri           uri for the operation
+     * @param projection    rows to select
+     * @param selection     selection params (where clause)
+     * @param selectionArgs values for the where args
+     * @param sortOrder     order by
+     * @return cursor for the result
+     */
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
@@ -101,6 +120,15 @@ public class ContentProvider extends android.content.ContentProvider {
         return cursor;
     }
 
+    /**
+     * the method to override when using ContentProvider.
+     * this will be fired when the getType() is called.
+     * it is used when we are using any MIME type operation in our code.
+     * for this example we are not using any MIME type related operation.
+     *
+     * @param uri uri
+     * @return type
+     */
     @Nullable
     @Override
     public String getType(@NonNull Uri uri) {
@@ -112,6 +140,14 @@ public class ContentProvider extends android.content.ContentProvider {
         }
     }
 
+    /**
+     * the method to override when using ContentProvider.
+     * this will be fired when the insert() is called.
+     *
+     * @param uri    uri for the operation
+     * @param values values to insert
+     * @return row of insertion
+     */
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
@@ -124,6 +160,15 @@ public class ContentProvider extends android.content.ContentProvider {
         return null;
     }
 
+    /**
+     * the method to override when using ContentProvider.
+     * this will be fired when the delete() is called.
+     *
+     * @param uri           uri for the operation
+     * @param selection     selection params (where clause)
+     * @param selectionArgs values for the selection args
+     * @return number of rows deleted
+     */
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
         int rowsDeleted;
@@ -141,6 +186,16 @@ public class ContentProvider extends android.content.ContentProvider {
         return rowsDeleted;
     }
 
+    /**
+     * the method to override when using ContentProvider.
+     * this will be fired when the update() is called.
+     *
+     * @param uri           uri for the operation
+     * @param values        values to update
+     * @param selection     where clause
+     * @param selectionArgs values for the where clause
+     * @return number of rows updated
+     */
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection,
                       @Nullable String[] selectionArgs) {
@@ -160,6 +215,9 @@ public class ContentProvider extends android.content.ContentProvider {
         return rowsUpdated;
     }
 
+    /**
+     * SQLite database class.
+     */
     private static class DatabaseHelper extends SQLiteOpenHelper {
         DatabaseHelper(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -179,6 +237,13 @@ public class ContentProvider extends android.content.ContentProvider {
         }
     }
 
+    /**
+     * method that will perform the insert operation for the TABLE ONE.
+     * this is called from the insert().
+     *
+     * @param values values to insert
+     * @return row in which the new data is inserted
+     */
     private Uri insertToTableOne(ContentValues values) {
         long rowID = sqlDB.insert(TABLE_ONE, null, values);
         try {
@@ -194,6 +259,13 @@ public class ContentProvider extends android.content.ContentProvider {
         return null;
     }
 
+    /**
+     * method that will perform the insert operation for the TABLE TWO.
+     * this is called from the insert().
+     *
+     * @param values values to insert
+     * @return row in which the new data is inserted
+     */
     private Uri insertToTableTwo(ContentValues values) {
         long rowID = sqlDB.insert(TABLE_TWO, null, values);
         try {

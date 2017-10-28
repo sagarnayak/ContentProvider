@@ -15,11 +15,15 @@ import java.util.ArrayList;
 
 /**
  * Created by sagar on 10/27/2017.
+ * adapter for recyclerview.
+ * as both tables used have the same structure the same adapter is used for both of them.
  */
 public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
+    //dataset
     private ArrayList<DataForRecyclerview> dataForRecyclerviews;
-    Context context;
+    //context for calling the interface methods
+    private Context context;
 
     public Adapter(ArrayList<DataForRecyclerview> dataForRecyclerviews, Context context) {
         this.dataForRecyclerviews = dataForRecyclerviews;
@@ -49,7 +53,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         private TextView textViewValue;
         private ConstraintLayout constraintLayout;
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
 
             textViewId = itemView.findViewById(R.id.textview_id);
@@ -67,6 +71,6 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     }
 
     public interface Callback {
-        void clickedOnItem(int position,String dbId);
+        void clickedOnItem(int position, String dbId);
     }
 }
